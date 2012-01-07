@@ -1,0 +1,27 @@
+# Compiled source #
+###################
+*.com
+*.class
+*.dll
+*.exe
+*.o
+*.so
+*.apk
+
+# The bin folders #
+##################
+Debug/
+Release/
+
+# External dependencies #
+#########################
+tesseract-3.01/
+
+# OS generated files #
+######################
+thumbs.db
+
+# Visual Studio 2010 crap #
+###########################
+Kerwal.TesseractNet.opensdf
+Kerwal.TesseractNet.sdf
