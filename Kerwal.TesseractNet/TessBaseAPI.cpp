@@ -9,8 +9,9 @@ namespace Kerwal
 {
 namespace TesseractNet
 {
-	char* StringToMultiByte(String^ string);
+	const char* StringToMultiByte(String^ string);
 	String^ GetMessageForLastError();
+	String^ GetMessageForErrNo();
 
 	TessBaseAPI::TessBaseAPI()
 		: _tessBaseApi(new tesseract::TessBaseAPI())
@@ -42,17 +43,23 @@ namespace TesseractNet
 	  
 	  void TessBaseAPI::SetInputName(String^ name)
 	  {
-		  char *newName = StringToMultiByte(name);
+		  const char* newName = StringToMultiByte(name);
 		  this->_tessBaseApi->SetInputName(newName);
 	  }
 
-	  char* StringToMultiByte(String^ string)
+	  const char* StringToMultiByte(String^ string)
 	  {
 		  // retrieve the internal pointer to the array of WCHARs and pin it so the garbage collector leaves it alone
 		  pin_ptr<const WCHAR> wString = PtrToStringChars(string); // TODO can this fail and how?
+		  // get the necessary size of the buffer
 		  int size = WideCharToMultiByte(CP_ACP, 0, wString, -1, NULL, 0, NULL, NULL);
 		  // TODO check for failure and throw exception if so
-		  char *cString = (char *)malloc(size); // TODO can this fail and how?
+		  char *cString = (char *)malloc(size);
+		  if(!cString)
+		  {
+			  wString = nullptr;
+			  throw gcnew Exception(GetMessageForErrNo());
+		  }
 		  if(!WideCharToMultiByte(CP_ACP, 0, wString, -1, cString, size, NULL, NULL))
 		  {
 			  if(cString) delete cString;
@@ -68,6 +75,19 @@ namespace TesseractNet
 			  String^ errorMessage = Marshal::PtrToStringUni((IntPtr)wErrorMessage);
 			  LocalFree(wErrorMessage);
 			  return errorMessage;
+	  }
+
+	  String^ GetMessageForErrNo()
+	  {
+		  // TODO maybe just use _wcserror_s(&buff, NULL) instead?
+		  errno_t code = 0;
+		  errno_t error = 0;
+		  error = _get_errno(&code);
+		  if(error) throw gcnew Exception("_get_errno returned '"+error+"'");
+		  WCHAR message[72];
+		  error = _wcserror_s(message, 72, code);
+		  if(error) throw gcnew Exception("_get_errno returned '"+error+"'");
+		  return Marshal::PtrToStringUni((IntPtr)message);
 	  }
 } // namespace TesseractNet
 } // namespace Kerwal
