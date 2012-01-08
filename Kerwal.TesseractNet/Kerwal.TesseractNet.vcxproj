@@ -21,7 +21,7 @@
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CLRSupport>true</CLRSupport>
-    <CharacterSet>Unicode</CharacterSet>
+    <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
@@ -55,11 +55,12 @@
       </PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile>
       </PrecompiledHeaderOutputFile>
-      <AdditionalIncludeDirectories>..\tesseract-3.01\api;..\tesseract-3.01\ccmain;..\tesseract-3.01\ccutil;..\tesseract-3.01\ccstruct;..\tesseract-3.01\classify;..\tesseract-3.01\cutil;..\tesseract-3.01\dict;..\tesseract-3.01\display;..\tesseract-3.01\image;..\tesseract-3.01\textord;..\tesseract-3.01\viewer;..\tesseract-3.01\wordrec;..\tesseract-3.01\pageseg;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\tesseract-3.01\api;..\tesseract-3.01\ccmain;..\tesseract-3.01\ccutil;..\tesseract-3.01\ccstruct;..\tesseract-3.01\classify;..\tesseract-3.01\cutil;..\tesseract-3.01\dict;..\tesseract-3.01\display;..\tesseract-3.01\image;..\tesseract-3.01\textord;..\tesseract-3.01\viewer;..\tesseract-3.01\wordrec;..\tesseract-3.01\pageseg;..\tesseract-3.01\vs2010\include\leptonica;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>..\tesseract-3.01\vs2010\Debug\tesseract-debug.lib</AdditionalDependencies>
+      <AdditionalDependencies>tesseract-debug.lib;user32.lib;liblept-static-mtdll-debug.lib;libpng-static-mtdll-debug.lib;libjpeg-static-mtdll-debug.lib;giflib-static-mtdll-debug.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\tesseract-3.01\vs2008\lib;..\tesseract-3.01\vs2010\Debug</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -83,6 +84,7 @@
     <ClInclude Include="TessBaseAPI.h">
       <FileType>CppHeader</FileType>
     </ClInclude>
+    <ClInclude Include="Win32Error.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssemblyInfo.cpp" />
