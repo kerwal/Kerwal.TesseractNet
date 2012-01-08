@@ -4,6 +4,7 @@
 #include <baseapi.h>
 
 using namespace System;
+using namespace System::Runtime::InteropServices;
 
 namespace Kerwal
 {
@@ -34,31 +35,31 @@ namespace TesseractNet
 	   */
 	  void SetInputName(String^ name);
 
-	 // /** Set the name of the bonus output files. Needed only for debugging. */
-	 // void SetOutputName(String^ name);
+	  /** Set the name of the bonus output files. Needed only for debugging. */
+	  void SetOutputName(String^ name);
 
-	 // /**
-	 //  * Set the value of an internal "parameter."
-	 //  * Supply the name of the parameter and the value as a string, just as
-	 //  * you would in a config file.
-	 //  * Returns false if the name lookup failed.
-	 //  * Eg SetVariable("tessedit_char_blacklist", "xyz"); to ignore x, y and z.
-	 //  * Or SetVariable("classify_bln_numeric_mode", "1"); to set numeric-only mode.
-	 //  * SetVariable may be used before Init, but settings will revert to
-	 //  * defaults on End().
-	 //  * TODO(rays) Add a command-line option to dump the parameters to stdout
-	 //  * and add a pointer to it in the FAQ
-	 //  *
-	 //  * Note: Must be called after Init(). Only works for non-init variables
-	 //  * (init variables should be passed to Init()).
-	 //  */
-	 // bool SetVariable(String^ name, String^ value);
+	  /**
+	   * Set the value of an internal "parameter."
+	   * Supply the name of the parameter and the value as a string, just as
+	   * you would in a config file.
+	   * Returns false if the name lookup failed.
+	   * Eg SetVariable("tessedit_char_blacklist", "xyz"); to ignore x, y and z.
+	   * Or SetVariable("classify_bln_numeric_mode", "1"); to set numeric-only mode.
+	   * SetVariable may be used before Init, but settings will revert to
+	   * defaults on End().
+	   * TODO(rays) Add a command-line option to dump the parameters to stdout
+	   * and add a pointer to it in the FAQ
+	   *
+	   * Note: Must be called after Init(). Only works for non-init variables
+	   * (init variables should be passed to Init()).
+	   */
+	  bool SetVariable(String^ name, String^ value);
 
-	 // // Returns true if the parameter was found among Tesseract parameters.
-	 // // Fills in value with the value of the parameter.
-	 // bool GetIntVariable(String^ name, int value);
-	 // bool GetBoolVariable(String^ name, bool value);
-	 // bool GetDoubleVariable(String^ name, double value);
+	  // Returns true if the parameter was found among Tesseract parameters.
+	  // Fills in value with the value of the parameter.
+	  bool GetIntVariable(String^ name, [Out] int% value);
+	  bool GetBoolVariable(String^ name, [Out] bool% value);
+	  bool GetDoubleVariable(String^ name, [Out] double% value);
 	 // // Returns the pointer to the string that represents the value of the
 	 // // parameter if it was found among Tesseract parameters.
 	 // String^ GetStringVariable(String^ name);

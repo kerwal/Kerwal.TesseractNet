@@ -43,8 +43,42 @@ namespace TesseractNet
 	  
 	  void TessBaseAPI::SetInputName(String^ name)
 	  {
-		  const char* newName = StringToMultiByte(name);
-		  this->_tessBaseApi->SetInputName(newName);
+		  const char* cName = StringToMultiByte(name);
+		  this->_tessBaseApi->SetInputName(cName);
+	  }
+	  
+	  void TessBaseAPI::SetOutputName(String^ name)
+	  {
+		  const char* cName = StringToMultiByte(name);
+		  this->_tessBaseApi->SetOutputName(cName);
+	  }
+	  
+	  bool TessBaseAPI::SetVariable(String^ name, String^ value)
+	  {
+		  const char* cName = StringToMultiByte(name);
+		  const char* cValue = StringToMultiByte(value);
+		  return this->_tessBaseApi->SetVariable(cName, cValue);
+	  }
+
+	  bool TessBaseAPI::GetIntVariable(String^ name, [Out] int% value)
+	  {
+		  const char* cName = StringToMultiByte(name);
+		  pin_ptr<int> pValue = &value;
+		  return this->_tessBaseApi->GetIntVariable(cName, (int*)value);
+	  }
+
+	  bool TessBaseAPI::GetBoolVariable(String^ name, [Out] bool% value)
+	  {
+		  const char* cName = StringToMultiByte(name);
+		  pin_ptr<bool> pValue = &value;
+		  return this->_tessBaseApi->GetBoolVariable(cName, (bool*)value);
+	  }
+
+	  bool TessBaseAPI::GetDoubleVariable(String^ name, [Out] double% value)
+	  {
+		  const char* cName = StringToMultiByte(name);
+		  pin_ptr<double> pValue = &value;
+		  return this->_tessBaseApi->GetDoubleVariable(cName, (double*)pValue);
 	  }
 
 	  const char* StringToMultiByte(String^ string)
