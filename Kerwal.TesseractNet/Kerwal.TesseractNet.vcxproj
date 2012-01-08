@@ -84,7 +84,6 @@
     <ClInclude Include="TessBaseAPI.h">
       <FileType>CppHeader</FileType>
     </ClInclude>
-    <ClInclude Include="Win32Error.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AssemblyInfo.cpp" />

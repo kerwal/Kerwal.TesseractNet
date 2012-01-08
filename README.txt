@@ -1,6 +1,6 @@
 To Do
 *****
-1. Finish defining class methods (in progress).
+1. Finish defining methods in TessBaseAPI (in progress).
 
 How to Compile on Windows
 *************************

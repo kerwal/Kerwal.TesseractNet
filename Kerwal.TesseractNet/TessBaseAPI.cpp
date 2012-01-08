@@ -9,7 +9,7 @@ namespace Kerwal
 {
 namespace TesseractNet
 {
-	char* StringToMbs(String^ string);
+	char* StringToMultiByte(String^ string);
 	String^ GetMessageForLastError();
 
 	TessBaseAPI::TessBaseAPI()
@@ -19,7 +19,16 @@ namespace TesseractNet
 
 	TessBaseAPI::~TessBaseAPI()
 	{
-		  if(this->_tessBaseApi != NULL)
+		  if(this->_tessBaseApi)
+		  {
+			  delete this->_tessBaseApi;
+			  this->_tessBaseApi = NULL;
+		  }
+	}
+
+	TessBaseAPI::!TessBaseAPI()
+	{
+		  if(this->_tessBaseApi)
 		  {
 			  delete this->_tessBaseApi;
 			  this->_tessBaseApi = NULL;
@@ -46,6 +55,7 @@ namespace TesseractNet
 		  char *cString = (char *)malloc(size); // TODO can this fail and how?
 		  if(!WideCharToMultiByte(CP_ACP, 0, wString, -1, cString, size, NULL, NULL))
 		  {
+			  if(cString) delete cString;
 			  throw gcnew Exception(GetMessageForLastError());
 		  }
 		  return cString;

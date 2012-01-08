@@ -494,7 +494,8 @@ namespace TesseractNet
 	 // static void DeleteBlockList(BLOCK_LIST* block_list);
 	 ///* @} */
 
-	 //protected:
+	 protected:
+		 !TessBaseAPI();
 
 	 //// /** Common code for setting the image. Returns true if Init has been called. */
 	 //// bool InternalSetImage();
