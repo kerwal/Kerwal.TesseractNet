@@ -53,7 +53,11 @@ namespace TesseractNet
 		  pin_ptr<const WCHAR> wString = PtrToStringChars(string); // TODO can this fail and how?
 		  // get the necessary size of the buffer
 		  int size = WideCharToMultiByte(CP_ACP, 0, wString, -1, NULL, 0, NULL, NULL);
-		  // TODO check for failure and throw exception if so
+		  if(!size)
+		  {
+			  wString = nullptr;
+			  throw gcnew Exception(GetMessageForLastError());
+		  }
 		  char *cString = (char *)malloc(size);
 		  if(!cString)
 		  {
