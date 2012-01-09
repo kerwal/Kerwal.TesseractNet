@@ -57,15 +57,17 @@ namespace TesseractNet
 
 	  // Returns true if the parameter was found among Tesseract parameters.
 	  // Fills in value with the value of the parameter.
-	  bool GetIntVariable(String^ name, [Out] int% value);
-	  bool GetBoolVariable(String^ name, [Out] bool% value);
-	  bool GetDoubleVariable(String^ name, [Out] double% value);
-	 // // Returns the pointer to the string that represents the value of the
-	 // // parameter if it was found among Tesseract parameters.
-	 // String^ GetStringVariable(String^ name);
+	  bool GetIntVariable(String^ name, [Out] int^ value);
+	  bool GetBoolVariable(String^ name, [Out] bool^ value);
+	  bool GetDoubleVariable(String^ name, [Out] double^ value);
 
-	 // // Print Tesseract parameters to the given file.
-	 // void PrintVariables(FILE fp);
+	  // Returns the pointer to the string that represents the value of the
+	  // parameter if it was found among Tesseract parameters.
+	  String^ GetStringVariable(String^ name);
+
+	  // Print Tesseract parameters to the given file.
+	  // Accepts anything the mode parameter in fopen() does; i.e. "w", "r", etc.
+	  void PrintVariables(String^ path, String^ mode);
 	 // // Get value of named variable as a string, if it exists.
 	 // bool GetVariableAsString(String^ name, String^ val);
 
