@@ -67,6 +67,7 @@ namespace TesseractNet
 
 	  // Print Tesseract parameters to the given file.
 	  // Accepts anything the mode parameter in fopen() does; i.e. "w", "r", etc.
+	  // TODO is it possible to marshal a FILE handle/pointer from .Net/CLI?
 	  void PrintVariables(String^ path, String^ mode);
 	 // // Get value of named variable as a string, if it exists.
 	 // bool GetVariableAsString(String^ name, String^ val);

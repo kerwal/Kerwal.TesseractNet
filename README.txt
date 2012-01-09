@@ -27,5 +27,10 @@ How to Use
 4. Use TessBaseAPI like in C++ - with only a few differences. // TODO find and document the differences
 	- search the net for tesseract ocr and read what's available.
 	- browse the source code - start in the 'tesseract' project.
+	- Differences:
+	*                      Kerwal.TesseractNet                *               tesseract               *
+	* TessBaseAPI::PrintVariables(String^ path, String^ mode) * TessBaseAPI::PrintVariables(FILE *fp) *
+	* // opens a file at 'path' in 'mode', calls              *                                       *
+	* // PrintVariables and closes the file.                  *                                       *
 
 To be continued...
