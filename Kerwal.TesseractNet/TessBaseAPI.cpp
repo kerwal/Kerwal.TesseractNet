@@ -68,28 +68,28 @@ namespace TesseractNet
 		return result;
 	}
 
-	bool TessBaseAPI::GetIntVariable(String^ name, [Out] int^ value)
+	bool TessBaseAPI::GetIntVariable(String^ name, [Out] int% value)
 	{
 		const char* cName = StringToMultiByte(name);
-		pin_ptr<int> pValue = &*value;
+		pin_ptr<int> pValue = &value;
 		bool result = this->_tessBaseApi->GetIntVariable(cName, pValue);
 		free((char*)cName);
 		return result;
 	}
 
-	bool TessBaseAPI::GetBoolVariable(String^ name, [Out] bool^ value)
+	bool TessBaseAPI::GetBoolVariable(String^ name, [Out] bool% value)
 	{
 		const char* cName = StringToMultiByte(name);
-		pin_ptr<bool> pValue = &*value;
+		pin_ptr<bool> pValue = &value;
 		bool result = this->_tessBaseApi->GetBoolVariable(cName, pValue);
 		free((char*)cName);
 		return result;
 	}
 
-	bool TessBaseAPI::GetDoubleVariable(String^ name, [Out] double^ value)
+	bool TessBaseAPI::GetDoubleVariable(String^ name, [Out] double% value)
 	{
 		const char* cName = StringToMultiByte(name);
-		pin_ptr<double> pValue = &*value;
+		pin_ptr<double> pValue = &value;
 		bool result = this->_tessBaseApi->GetDoubleVariable(cName, pValue);
 		free((char*)cName);
 		return result;
@@ -128,41 +128,53 @@ namespace TesseractNet
 		return result;
 	}
 
-	int TessBaseAPI::Init(String^ datapath, String^ language, tesseract::OcrEngineMode mode, List<String^>^ configs, List<String^>^ vars_vec, List<String^>^ vars_values, bool set_only_init_params)
+	int TessBaseAPI::Init(String^ datapath, String^ language, OcrEngineMode mode, List<String^>^ configs, List<String^>^ vars_vec, List<String^>^ vars_values, bool set_only_init_params)
 	{
 		const char* cDatapath = StringToMultiByte(datapath);
 		const char* cLanguage = StringToMultiByte(language);
-		int numConfigs = configs->Count;
-		const char** cpConfigs = new const char*[numConfigs];
-		int newConfigIndex = 0;
-		for each(String^ config in configs)
+		int numConfigs = (configs != nullptr) ? configs->Count : 0;
+		const char** cpConfigs = (configs != nullptr) ? new const char*[numConfigs] : NULL;
+		if(cpConfigs != NULL)
 		{
-			cpConfigs[newConfigIndex] = StringToMultiByte(config);
-			newConfigIndex++;
+			int newConfigIndex = 0;
+			for each(String^ config in configs)
+			{
+				cpConfigs[newConfigIndex] = StringToMultiByte(config);
+				newConfigIndex++;
+			}
 		}
-		GenericVector<STRING>* gvVars_vec = new GenericVector<STRING>(vars_vec->Count);
-		for each(String^ var in vars_vec)
+		GenericVector<STRING>* gvVars_vec = (vars_vec != nullptr) ? new GenericVector<STRING>(vars_vec->Count) : NULL;
+		if(gvVars_vec != NULL)
 		{
-			const char* cVar = StringToMultiByte(var);
-			gvVars_vec->push_front(cVar);
-			free((char*)cVar); // TODO make sure this isn't deleting the copy in gvVars_vec
+			for each(String^ var in vars_vec)
+			{
+				const char* cVar = StringToMultiByte(var);
+				gvVars_vec->push_front(cVar);
+				free((char*)cVar); // TODO make sure this isn't deleting the copy in gvVars_vec
+			}
 		}
-		GenericVector<STRING>* gvVars_values = new GenericVector<STRING>(vars_values->Count);
-		for each(String^ value in vars_values)
+		GenericVector<STRING>* gvVars_values = (vars_values != nullptr) ? new GenericVector<STRING>(vars_values->Count) : NULL;
+		if(gvVars_values != NULL)
 		{
-			const char* cValue = StringToMultiByte(value);
-			gvVars_values->push_front(cValue);
-			free((char*)cValue); // TODO make sure this isn't deleting the copy in gvVars_values
+			for each(String^ value in vars_values)
+			{
+				const char* cValue = StringToMultiByte(value);
+				gvVars_values->push_front(cValue);
+				free((char*)cValue); // TODO make sure this isn't deleting the copy in gvVars_values
+			}
 		}
-		int result = this->_tessBaseApi->Init(cDatapath, cLanguage, mode, (char**)cpConfigs, numConfigs, gvVars_vec, gvVars_values, set_only_init_params);
-		delete gvVars_values;
-		delete gvVars_vec;
-		for(int i = 0; i < numConfigs; i++)
+		int result = this->_tessBaseApi->Init(cDatapath, cLanguage, static_cast<tesseract::OcrEngineMode>(mode), (char**)cpConfigs, numConfigs, gvVars_vec, gvVars_values, set_only_init_params);
+		if(gvVars_values != NULL) delete gvVars_values;
+		if(gvVars_vec != NULL) delete gvVars_vec;
+		if(cpConfigs != NULL)
 		{
-			free((char*)cpConfigs[i]);
-			//cpConfigs[i] = NULL; // <-- not necessary if delete[] is called immediately after the loop
+			for(int i = 0; i < numConfigs; i++)
+			{
+				free((char*)cpConfigs[i]);
+				//cpConfigs[i] = NULL; // <-- not necessary if delete[] is called immediately after the loop
+			}
+			delete[] cpConfigs;
 		}
-		delete[] cpConfigs;
 		free((char*)cLanguage);
 		free((char*)cDatapath);
 		return result;

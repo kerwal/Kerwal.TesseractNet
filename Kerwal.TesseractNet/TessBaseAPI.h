@@ -1,5 +1,5 @@
-#ifndef __KERWAL_TESSERACTNET_TESSBASEAPI_h__
-#define __KERWAL_TESSERACTNET_TESSBASEAPI_h__
+#ifndef __KERWAL_TESSERACTNET_TESSBASEAPI_H__
+#define __KERWAL_TESSERACTNET_TESSBASEAPI_H__
 
 #include <baseapi.h>
 #include <strngs.h>
@@ -12,17 +12,29 @@ namespace Kerwal
 {
 namespace TesseractNet
 {
-	 /**
-	 * Base class for all tesseract APIs.
-	 * Specific classes can add ability to work on different inputs or produce
-	 * different outputs.
-	 * This class is mostly an interface layer on top of the Tesseract instance
-	 * class to hide the data types so that users of this class don't have to
-	 * include any other Tesseract headers.
-	 */
+	public enum class OcrEngineMode {
+		OEM_TESSERACT_ONLY,           // Run Tesseract only - fastest
+		OEM_CUBE_ONLY,                // Run Cube only - better accuracy, but slower
+		OEM_TESSERACT_CUBE_COMBINED,  // Run both and combine results - best accuracy
+		OEM_DEFAULT                   // Specify this mode when calling init_*(),
+									  // to indicate that any of the above modes
+									  // should be automatically inferred from the
+									  // variables in the language-specific config,
+									  // command-line configs, or if not specified
+									  // in any of the above should be set to the
+									  // default OEM_TESSERACT_ONLY.
+	};
+	/**
+	* Base class for all tesseract APIs.
+	* Specific classes can add ability to work on different inputs or produce
+	* different outputs.
+	* This class is mostly an interface layer on top of the Tesseract instance
+	* class to hide the data types so that users of this class don't have to
+	* include any other Tesseract headers.
+	*/
 	public ref class TessBaseAPI
 	{
-	 public:
+		public:
 	  TessBaseAPI();
 	  virtual ~TessBaseAPI();
 
@@ -59,9 +71,9 @@ namespace TesseractNet
 
 	  // Returns true if the parameter was found among Tesseract parameters.
 	  // Fills in value with the value of the parameter.
-	  bool GetIntVariable(String^ name, [Out] int^ value);
-	  bool GetBoolVariable(String^ name, [Out] bool^ value);
-	  bool GetDoubleVariable(String^ name, [Out] double^ value);
+	  bool GetIntVariable(String^ name, [Out] int% value);
+	  bool GetBoolVariable(String^ name, [Out] bool% value);
+	  bool GetDoubleVariable(String^ name, [Out] double% value);
 
 	  // Returns the pointer to the string that represents the value of the
 	  // parameter if it was found among Tesseract parameters.
@@ -99,13 +111,15 @@ namespace TesseractNet
 	   * rare use case, since there are very few uses that require any parameters
 	   * to be set before Init.
 	   */
-	  int Init(String^ datapath, String^ language, tesseract::OcrEngineMode mode, List<String^>^ configs, List<String^>^ vars_vec, List<String^>^ vars_values, bool set_only_init_params);
-	 // int Init(String^ datapath, String^ language, tesseract::OcrEngineMode oem) {
-		//return Init(datapath, language, oem, NULL, 0, NULL, NULL, false);
-	 // }
-	 // int Init(String^ datapath, String^ language) {
-		//return Init(datapath, language, tesseract::OEM_DEFAULT, NULL, 0, NULL, NULL, false);
-	 // }
+	  int Init(String^ datapath, String^ language, OcrEngineMode mode, List<String^>^ configs, List<String^>^ vars_vec, List<String^>^ vars_values, bool set_only_init_params);
+	  int Init(String^ datapath, String^ language, OcrEngineMode oem)
+	  {
+		return Init(datapath, language, oem, nullptr, nullptr, nullptr, false);
+	  }
+	  int Init(String^ datapath, String^ language)
+	  {
+		return Init(datapath, language, OcrEngineMode::OEM_DEFAULT, nullptr, nullptr, nullptr, false);
+	  }
 
 	 // /**
 	 //  * Init only the lang model component of Tesseract. The only functions
@@ -565,4 +579,4 @@ namespace TesseractNet
 	  };
 } // namespace TesseractNet
 } // namespace Kerwal
-#endif	// __KERWAL_TESSERACTNET_TESSBASEAPI_h__
+#endif	// __KERWAL_TESSERACTNET_TESSBASEAPI_H__
