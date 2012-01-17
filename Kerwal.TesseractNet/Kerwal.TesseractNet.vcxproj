@@ -59,7 +59,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>tesseract-debug.lib;user32.lib;liblept-static-mtdll-debug.lib;libpng-static-mtdll-debug.lib;libjpeg-static-mtdll-debug.lib;giflib-static-mtdll-debug.lib</AdditionalDependencies>
+      <AdditionalDependencies>tesseract-debug.lib;ccutil.lib;user32.lib;liblept-static-mtdll-debug.lib;libpng-static-mtdll-debug.lib;libjpeg-static-mtdll-debug.lib;giflib-static-mtdll-debug.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>..\tesseract-3.01\vs2008\lib;..\tesseract-3.01\vs2010\Debug</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>

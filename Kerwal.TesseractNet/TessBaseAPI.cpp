@@ -4,6 +4,9 @@
 
 using namespace System;
 using namespace System::Runtime::InteropServices;
+using namespace System::Collections::Generic;
+
+class STRING;
 
 namespace Kerwal
 {
@@ -20,95 +23,152 @@ namespace TesseractNet
 
 	TessBaseAPI::~TessBaseAPI()
 	{
-		  if(this->_tessBaseApi)
-		  {
-			  delete this->_tessBaseApi;
-			  this->_tessBaseApi = NULL;
-		  }
+		if(this->_tessBaseApi)
+		{
+			delete this->_tessBaseApi;
+			this->_tessBaseApi = NULL;
+		}
 	}
 
 	TessBaseAPI::!TessBaseAPI()
 	{
-		  if(this->_tessBaseApi)
-		  {
-			  delete this->_tessBaseApi;
-			  this->_tessBaseApi = NULL;
-		  }
+		if(this->_tessBaseApi)
+		{
+			delete this->_tessBaseApi;
+			this->_tessBaseApi = NULL;
+		}
 	}
 
-	  String^ TessBaseAPI::Version()
-	  {
-		  return Marshal::PtrToStringAuto((IntPtr)(char*)tesseract::TessBaseAPI::Version());
-	  }
+	String^ TessBaseAPI::Version()
+	{
+		return Marshal::PtrToStringAuto((IntPtr)(char*)tesseract::TessBaseAPI::Version());
+	}
 	  
-	  void TessBaseAPI::SetInputName(String^ name)
-	  {
-		  const char* cName = StringToMultiByte(name);
-		  this->_tessBaseApi->SetInputName(cName);
-	  }
-	  
-	  void TessBaseAPI::SetOutputName(String^ name)
-	  {
-		  const char* cName = StringToMultiByte(name);
-		  this->_tessBaseApi->SetOutputName(cName);
-	  }
-	  
-	  bool TessBaseAPI::SetVariable(String^ name, String^ value)
-	  {
-		  const char* cName = StringToMultiByte(name);
-		  const char* cValue = StringToMultiByte(value);
-		  bool result = this->_tessBaseApi->SetVariable(cName, cValue);
-		  delete cName, cValue; // TODO does this really delete both? first time i've used a comma in a delete statement
-		  return result;
-	  }
+	void TessBaseAPI::SetInputName(String^ name)
+	{
+		const char* cName = StringToMultiByte(name);
+		this->_tessBaseApi->SetInputName(cName);
+		free((char*)cName);
+	}
 
-	  bool TessBaseAPI::GetIntVariable(String^ name, [Out] int^ value)
-	  {
-		  const char* cName = StringToMultiByte(name);
-		  pin_ptr<int> pValue = &*value;
-		  bool result = this->_tessBaseApi->GetIntVariable(cName, pValue);
-		  delete cName;
-		  return result;
-	  }
+	void TessBaseAPI::SetOutputName(String^ name)
+	{
+		const char* cName = StringToMultiByte(name);
+		this->_tessBaseApi->SetOutputName(cName);
+		free((char*)cName);
+	}
+	
+	bool TessBaseAPI::SetVariable(String^ name, String^ value)
+	{
+		const char* cName = StringToMultiByte(name);
+		const char* cValue = StringToMultiByte(value);
+		bool result = this->_tessBaseApi->SetVariable(cName, cValue);
+		free((char*)cName);
+		free((char*)cValue);
+		return result;
+	}
 
-	  bool TessBaseAPI::GetBoolVariable(String^ name, [Out] bool^ value)
-	  {
-		  const char* cName = StringToMultiByte(name);
-		  pin_ptr<bool> pValue = &*value;
-		  bool result = this->_tessBaseApi->GetBoolVariable(cName, pValue);
-		  delete cName;
-		  return result;
-	  }
+	bool TessBaseAPI::GetIntVariable(String^ name, [Out] int^ value)
+	{
+		const char* cName = StringToMultiByte(name);
+		pin_ptr<int> pValue = &*value;
+		bool result = this->_tessBaseApi->GetIntVariable(cName, pValue);
+		free((char*)cName);
+		return result;
+	}
 
-	  bool TessBaseAPI::GetDoubleVariable(String^ name, [Out] double^ value)
-	  {
-		  const char* cName = StringToMultiByte(name);
-		  pin_ptr<double> pValue = &*value;
-		  bool result = this->_tessBaseApi->GetDoubleVariable(cName, pValue);
-		  delete cName;
-		  return result;
-	  }
+	bool TessBaseAPI::GetBoolVariable(String^ name, [Out] bool^ value)
+	{
+		const char* cName = StringToMultiByte(name);
+		pin_ptr<bool> pValue = &*value;
+		bool result = this->_tessBaseApi->GetBoolVariable(cName, pValue);
+		free((char*)cName);
+		return result;
+	}
 
-	  String^ TessBaseAPI::GetStringVariable(String^ name)
-	  {
-		  const char* cName = StringToMultiByte(name);
-		  const char* cValue = this->_tessBaseApi->GetStringVariable(cName);
-		  return Marshal::PtrToStringAuto((IntPtr)(char*)cValue);
-	  }
+	bool TessBaseAPI::GetDoubleVariable(String^ name, [Out] double^ value)
+	{
+		const char* cName = StringToMultiByte(name);
+		pin_ptr<double> pValue = &*value;
+		bool result = this->_tessBaseApi->GetDoubleVariable(cName, pValue);
+		free((char*)cName);
+		return result;
+	}
 
-	  void TessBaseAPI::PrintVariables(String^ path, String^ mode)
-	  {
-		  FILE* file = NULL;
-		  pin_ptr<const WCHAR> wPath = PtrToStringChars(path);
-		  pin_ptr<const WCHAR> wMode = PtrToStringChars(mode);
-		  errno_t result = _wfopen_s(&file, wPath, wMode);
-		  if(result) throw gcnew Exception("_wfopen_s() returned '"+result+"' - "+GetMessageForErrNo()+".");
-		  this->_tessBaseApi->PrintVariables(file);
-		  if(fflush(file) == EOF) throw gcnew Exception("fflush() returned 'EOF'.");
-		  if(fclose(file) == EOF) throw gcnew Exception("fclose() returned 'EOF'.");
-		  file = NULL;
-	  }
+	String^ TessBaseAPI::GetStringVariable(String^ name)
+	{
+		const char* cName = StringToMultiByte(name);
+		const char* cValue = this->_tessBaseApi->GetStringVariable(cName);
+		free((char*)cName);
+		if(cValue == NULL) return nullptr;
+		return Marshal::PtrToStringAuto((IntPtr)(char*)cValue);
+	}
 
+	void TessBaseAPI::PrintVariables(String^ path, String^ mode)
+	{
+		FILE* file = NULL;
+		pin_ptr<const WCHAR> wPath = PtrToStringChars(path);
+		pin_ptr<const WCHAR> wMode = PtrToStringChars(mode);
+		errno_t result = _wfopen_s(&file, wPath, wMode);
+		if(result) throw gcnew Exception("_wfopen_s() returned '"+result+"' - "+GetMessageForErrNo()+".");
+		this->_tessBaseApi->PrintVariables(file);
+		// TODO should I be paranoid about closing the file if fflush() errors?
+		if(fflush(file) == EOF) throw gcnew Exception("fflush() returned 'EOF'.");
+		if(fclose(file) == EOF) throw gcnew Exception("fclose() returned 'EOF'.");
+		file = NULL;
+	}
+
+	bool TessBaseAPI::GetVariableAsString(String^ name, [Out] String^ val)
+	{
+		const char* cName = StringToMultiByte(name);
+		STRING sValue;
+		bool result = this->_tessBaseApi->GetVariableAsString(cName, &sValue);
+		free((char*)cName);
+		val = gcnew String(sValue.string()); // TODO can this be improved?
+		return result;
+	}
+
+	int TessBaseAPI::Init(String^ datapath, String^ language, tesseract::OcrEngineMode mode, List<String^>^ configs, List<String^>^ vars_vec, List<String^>^ vars_values, bool set_only_init_params)
+	{
+		const char* cDatapath = StringToMultiByte(datapath);
+		const char* cLanguage = StringToMultiByte(language);
+		int numConfigs = configs->Count;
+		const char** cpConfigs = new const char*[numConfigs];
+		int newConfigIndex = 0;
+		for each(String^ config in configs)
+		{
+			cpConfigs[newConfigIndex] = StringToMultiByte(config);
+			newConfigIndex++;
+		}
+		GenericVector<STRING>* gvVars_vec = new GenericVector<STRING>(vars_vec->Count);
+		for each(String^ var in vars_vec)
+		{
+			const char* cVar = StringToMultiByte(var);
+			gvVars_vec->push_front(cVar);
+			free((char*)cVar); // TODO make sure this isn't deleting the copy in gvVars_vec
+		}
+		GenericVector<STRING>* gvVars_values = new GenericVector<STRING>(vars_values->Count);
+		for each(String^ value in vars_values)
+		{
+			const char* cValue = StringToMultiByte(value);
+			gvVars_values->push_front(cValue);
+			free((char*)cValue); // TODO make sure this isn't deleting the copy in gvVars_values
+		}
+		int result = this->_tessBaseApi->Init(cDatapath, cLanguage, mode, (char**)cpConfigs, numConfigs, gvVars_vec, gvVars_values, set_only_init_params);
+		delete gvVars_values;
+		delete gvVars_vec;
+		for(int i = 0; i < numConfigs; i++)
+		{
+			free((char*)cpConfigs[i]);
+			//cpConfigs[i] = NULL; // <-- not necessary if delete[] is called immediately after the loop
+		}
+		delete[] cpConfigs;
+		free((char*)cLanguage);
+		free((char*)cDatapath);
+		return result;
+	}
+
+	  // The string returned by this function must be deallocated by calling "free()" on it
 	  const char* StringToMultiByte(String^ string)
 	  {
 		  // retrieve the internal pointer to the array of WCHARs and pin it so the garbage collector leaves it alone

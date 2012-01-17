@@ -2,9 +2,11 @@
 #define __KERWAL_TESSERACTNET_TESSBASEAPI_h__
 
 #include <baseapi.h>
+#include <strngs.h>
 
 using namespace System;
 using namespace System::Runtime::InteropServices;
+using namespace System::Collections::Generic;
 
 namespace Kerwal
 {
@@ -67,41 +69,37 @@ namespace TesseractNet
 
 	  // Print Tesseract parameters to the given file.
 	  // Accepts anything the mode parameter in fopen() does; i.e. "w", "r", etc.
-	  // TODO is it possible to marshal a FILE handle/pointer from .Net/CLI?
+	  // TODO is it possible to marshal a FILE handle/pointer from .Net/CLI instead?
 	  void PrintVariables(String^ path, String^ mode);
-	 // // Get value of named variable as a string, if it exists.
-	 // bool GetVariableAsString(String^ name, String^ val);
+	  // Get value of named variable as a string, if it exists.
+	  bool GetVariableAsString(String^ name, [Out] String^ val);
 
-	 // /**
-	 //  * Instances are now mostly thread-safe and totally independent,
-	 //  * but some global parameters remain. Basically it is safe to use multiple
-	 //  * TessBaseAPIs in different threads in parallel, UNLESS:
-	 //  * you use SetVariable on some of the Params in classify and textord.
-	 //  * If you do, then the effect will be to change it for all your instances.
-	 //  *
-	 //  * Start tesseract. Returns zero on success and -1 on failure.
-	 //  * NOTE that the only members that may be called before Init are those
-	 //  * listed above here in the class definition.
-	 //  *
-	 //  * The datapath must be the name of the parent directory of tessdata and
-	 //  * must end in / . Any name after the last / will be stripped.
-	 //  * The language is (usually) an ISO 639-3 string or NULL will default to eng.
-	 //  * It is entirely safe (and eventually will be efficient too) to call
-	 //  * Init multiple times on the same instance to change language, or just
-	 //  * to reset the classifier.
-	 //  * WARNING: On changing languages, all Tesseract parameters are reset
-	 //  * back to their default values. (Which may vary between languages.)
-	 //  * If you have a rare need to set a Variable that controls
-	 //  * initialization for a second call to Init you should explicitly
-	 //  * call End() and then use SetVariable before Init. This is only a very
-	 //  * rare use case, since there are very few uses that require any parameters
-	 //  * to be set before Init.
-	 //  */
-	 // int Init(String^ datapath, String^ language, tesseract::OcrEngineMode mode,
-		//	   char **configs, int configs_size,
-		//	   const GenericVector<STRING> *vars_vec,
-		//	   const GenericVector<STRING> *vars_values,
-		//	   bool set_only_init_params);
+	  /**
+	   * Instances are now mostly thread-safe and totally independent,
+	   * but some global parameters remain. Basically it is safe to use multiple
+	   * TessBaseAPIs in different threads in parallel, UNLESS:
+	   * you use SetVariable on some of the Params in classify and textord.
+	   * If you do, then the effect will be to change it for all your instances.
+	   *
+	   * Start tesseract. Returns zero on success and -1 on failure.
+	   * NOTE that the only members that may be called before Init are those
+	   * listed above here in the class definition.
+	   *
+	   * The datapath must be the name of the parent directory of tessdata and
+	   * must end in / . Any name after the last / will be stripped.
+	   * The language is (usually) an ISO 639-3 string or NULL will default to eng.
+	   * It is entirely safe (and eventually will be efficient too) to call
+	   * Init multiple times on the same instance to change language, or just
+	   * to reset the classifier.
+	   * WARNING: On changing languages, all Tesseract parameters are reset
+	   * back to their default values. (Which may vary between languages.)
+	   * If you have a rare need to set a Variable that controls
+	   * initialization for a second call to Init you should explicitly
+	   * call End() and then use SetVariable before Init. This is only a very
+	   * rare use case, since there are very few uses that require any parameters
+	   * to be set before Init.
+	   */
+	  int Init(String^ datapath, String^ language, tesseract::OcrEngineMode mode, List<String^>^ configs, List<String^>^ vars_vec, List<String^>^ vars_values, bool set_only_init_params);
 	 // int Init(String^ datapath, String^ language, tesseract::OcrEngineMode oem) {
 		//return Init(datapath, language, oem, NULL, 0, NULL, NULL, false);
 	 // }
