@@ -4,6 +4,7 @@ To Do
 	- Debug should target tesseract-debug.lib and post build should copy tesseract-debug.dll to Debug folder.
 	- Release should target tesseract.lib and post build should copy tesseract.dll to Release folder.
 2. Finish defining methods in TessBaseAPI (in progress).
+3. Fix crash bug when TessBaseAPI::!TessBaseAPI() attempts to delete the internal copy of tesseract::TessBaseAPI.
 
 How to Compile on Windows (Debug only)
 *************************
@@ -23,7 +24,7 @@ How to Use
 **********
 1. Reference (and copy) the Kerwal.TesseractNet.dll.
 2. Copy tesseract-debug.dll from Kerwal.TesseractNet\tesseract-3.01\vs2010\Debug.
-3. "using namespace Kerwal.TesseractNet".
+3. "using Kerwal.TesseractNet".
 4. Use TessBaseAPI like in C++ - with only a few differences. // TODO find and document the differences
 	- search the net for tesseract ocr and read what's available.
 	- browse the source code - start in the 'tesseract' project.
@@ -32,5 +33,8 @@ How to Use
 	* TessBaseAPI::PrintVariables(String^ path, String^ mode) * TessBaseAPI::PrintVariables(FILE *fp) *
 	* // opens a file at 'path' in 'mode', calls              *                                       *
 	* // PrintVariables and closes the file.                  *                                       *
+
+5. Compile.
+6. Copy tessdata folder to output directory. //TODO elaborate more
 
 To be continued...

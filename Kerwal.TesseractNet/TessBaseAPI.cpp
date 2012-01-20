@@ -5,6 +5,7 @@
 using namespace System;
 using namespace System::Runtime::InteropServices;
 using namespace System::Collections::Generic;
+using namespace System::Text;
 
 class STRING;
 
@@ -41,7 +42,7 @@ namespace TesseractNet
 
 	String^ TessBaseAPI::Version()
 	{
-		return Marshal::PtrToStringAuto((IntPtr)(char*)tesseract::TessBaseAPI::Version());
+		return Marshal::PtrToStringAnsi((IntPtr)(char*)tesseract::TessBaseAPI::Version());
 	}
 	  
 	void TessBaseAPI::SetInputName(String^ name)
@@ -101,7 +102,7 @@ namespace TesseractNet
 		const char* cValue = this->_tessBaseApi->GetStringVariable(cName);
 		free((char*)cName);
 		if(cValue == NULL) return nullptr;
-		return Marshal::PtrToStringAuto((IntPtr)(char*)cValue);
+		return Marshal::PtrToStringAnsi((IntPtr)(char*)cValue);
 	}
 
 	void TessBaseAPI::PrintVariables(String^ path, String^ mode)
@@ -130,8 +131,8 @@ namespace TesseractNet
 
 	int TessBaseAPI::Init(String^ datapath, String^ language, OcrEngineMode mode, List<String^>^ configs, List<String^>^ vars_vec, List<String^>^ vars_values, bool set_only_init_params)
 	{
-		const char* cDatapath = StringToMultiByte(datapath);
-		const char* cLanguage = StringToMultiByte(language);
+		const char* cDatapath = (datapath != nullptr) ? StringToMultiByte(datapath) : NULL;
+		const char* cLanguage = (language != nullptr) ? StringToMultiByte(language) : NULL;
 		int numConfigs = (configs != nullptr) ? configs->Count : 0;
 		const char** cpConfigs = (configs != nullptr) ? new const char*[numConfigs] : NULL;
 		if(cpConfigs != NULL)
@@ -175,60 +176,107 @@ namespace TesseractNet
 			}
 			delete[] cpConfigs;
 		}
-		free((char*)cLanguage);
-		free((char*)cDatapath);
+		if(cLanguage != NULL) free((char*)cLanguage);
+		if(cDatapath != NULL) free((char*)cDatapath);
 		return result;
 	}
 
-	  // The string returned by this function must be deallocated by calling "free()" on it
-	  const char* StringToMultiByte(String^ string)
-	  {
-		  // retrieve the internal pointer to the array of WCHARs and pin it so the garbage collector leaves it alone
-		  pin_ptr<const WCHAR> wString = PtrToStringChars(string);
-		  // get the necessary size of the buffer
-		  int size = WideCharToMultiByte(CP_ACP, 0, wString, -1, NULL, 0, NULL, NULL);
-		  if(!size)
-		  {
-			  wString = nullptr;
-			  throw gcnew Exception("WideCharToMultiByte() returned '0' - "+GetMessageForLastError()+".");
-		  }
-		  // allocate the buffer on the stack
-		  char *cString = (char*)malloc(size);
-		  if(!cString)
-		  {
-			  wString = nullptr;
-			  throw gcnew Exception("malloc() returned 'null' - "+GetMessageForErrNo()+".");
-		  }
-		  // transcode and copy the string to the buffer
-		  if(!WideCharToMultiByte(CP_ACP, 0, wString, -1, cString, size, NULL, NULL))
-		  {
-			  if(cString) delete cString;
-			  throw gcnew Exception("WideCharToMultiByte() returned '0' - "+GetMessageForLastError()+".");
-		  }
-		  // return the new ANSI encoded string
-		  return cString;
-	  }
+	//String^ TessBaseAPI::TesseractRect(array<Byte>^ imagedata, int bytes_per_pixel, int bytes_per_line, int left, int top, int width, int height)
+	//{
+	//	pin_ptr<unsigned char> ucpImagedata = &imagedata[0];
+	//	char* text = this->_tessBaseApi->TesseractRect(ucpImagedata, bytes_per_pixel, bytes_per_line, left, top, width, height);
+	//	array<Byte>^ utf8TextBytes = gcnew array<Byte>(strlen(text));
+	//	Marshal::Copy((IntPtr)text, utf8TextBytes, 0, utf8TextBytes->Length);
+	//	delete[] text;
+	//	array<Byte>^ utf16TextBytes = Encoding::Convert(Encoding::UTF8, Encoding::Unicode, utf8TextBytes);
+	//	return Encoding::Unicode->GetString(utf16TextBytes);
+	//}
 
-	  String^ GetMessageForLastError()
-	  {
-			  WCHAR* wErrorMessage = NULL;
-			  int nLen = FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_IGNORE_INSERTS | FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(), MAKELANGID( LANG_NEUTRAL, SUBLANG_DEFAULT ), (LPWSTR)&wErrorMessage, 1, NULL);
-			  String^ errorMessage = Marshal::PtrToStringUni((IntPtr)wErrorMessage);
-			  LocalFree(wErrorMessage);
-			  return errorMessage;
-	  }
+	IntPtr TessBaseAPI::SetImage(String^ path)
+	{
+		const char* cPath = StringToMultiByte(path);
+		try
+		{
+			Pix* pix = pixRead(cPath);
+			if(pix == NULL) throw gcnew Exception("Unable to open file or invalid image format.");
+			this->_tessBaseApi->SetImage(pix);
+			return (IntPtr)pix;
+		}
+		finally
+		{
+			if(cPath) free((char*)cPath);
+		}
+	}
 
-	  String^ GetMessageForErrNo()
-	  {
-		  // TODO maybe just use _wcserror_s(&buff, NULL) instead?
-		  errno_t code = 0;
-		  errno_t error = 0;
-		  error = _get_errno(&code);
-		  if(error) throw gcnew Exception("_get_errno() returned '"+error+"'.");
-		  WCHAR message[72];
-		  error = _wcserror_s(message, 72, code);
-		  if(error) throw gcnew Exception("_get_errno() returned '"+error+"'.");
-		  return Marshal::PtrToStringUni((IntPtr)message);
-	  }
+	void TessBaseAPI::FreePix(IntPtr pix)
+	{
+		lept_free(pix.ToPointer());
+	}
+
+	void TessBaseAPI::SetRectangle(int left, int top, int width, int height)
+	{
+		this->_tessBaseApi->SetRectangle(left, top, width, height);
+	}
+
+	String^ TessBaseAPI::GetUTF8Text()
+	{
+		char* text = this->_tessBaseApi->GetUTF8Text();
+		array<Byte>^ utf8TextBytes = gcnew array<Byte>(strlen(text));
+		Marshal::Copy((IntPtr)text, utf8TextBytes, 0, utf8TextBytes->Length);
+		delete[] text;
+		array<Byte>^ utf16TextBytes = Encoding::Convert(Encoding::UTF8, Encoding::Unicode, utf8TextBytes);
+		return Encoding::Unicode->GetString(utf16TextBytes);
+	}
+
+	// The string returned by this function must be deallocated by calling "free()" on it
+	const char* StringToMultiByte(String^ string)
+	{
+		// retrieve the internal pointer to the array of WCHARs and pin it so the garbage collector leaves it alone
+		pin_ptr<const WCHAR> wString = PtrToStringChars(string);
+		// get the necessary size of the buffer
+		int size = WideCharToMultiByte(CP_ACP, 0, wString, -1, NULL, 0, NULL, NULL);
+		if(!size)
+		{
+			wString = nullptr;
+			throw gcnew Exception("WideCharToMultiByte() returned '0' - "+GetMessageForLastError()+".");
+		}
+		// allocate the buffer on the stack
+		char *cString = (char*)malloc(size);
+		if(!cString)
+		{
+			wString = nullptr;
+			throw gcnew Exception("malloc() returned 'null' - "+GetMessageForErrNo()+".");
+		}
+		// transcode and copy the string to the buffer
+		if(!WideCharToMultiByte(CP_ACP, 0, wString, -1, cString, size, NULL, NULL))
+		{
+			if(cString) delete cString;
+			throw gcnew Exception("WideCharToMultiByte() returned '0' - "+GetMessageForLastError()+".");
+		}
+		// return the new ANSI encoded string
+		return cString;
+	}
+
+	String^ GetMessageForLastError()
+	{
+		WCHAR* wErrorMessage = NULL;
+		int nLen = FormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_IGNORE_INSERTS | FORMAT_MESSAGE_FROM_SYSTEM, NULL, GetLastError(), MAKELANGID( LANG_NEUTRAL, SUBLANG_DEFAULT ), (LPWSTR)&wErrorMessage, 1, NULL);
+		String^ errorMessage = Marshal::PtrToStringUni((IntPtr)wErrorMessage);
+		LocalFree(wErrorMessage);
+		return errorMessage;
+	}
+
+	String^ GetMessageForErrNo()
+	{
+		// TODO maybe just use _wcserror_s(&buff, NULL) instead?
+		errno_t code = 0;
+		errno_t error = 0;
+		error = _get_errno(&code);
+		if(error) throw gcnew Exception("_get_errno() returned '"+error+"'.");
+		WCHAR message[72];
+		error = _wcserror_s(message, 72, code);
+		if(error) throw gcnew Exception("_get_errno() returned '"+error+"'.");
+		return Marshal::PtrToStringUni((IntPtr)message);
+	}
 } // namespace TesseractNet
 } // namespace Kerwal

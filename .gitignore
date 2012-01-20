@@ -16,6 +16,7 @@ Release/
 # External dependencies #
 #########################
 tesseract-3.01/
+leptonica/
 
 # OS generated files #
 ######################

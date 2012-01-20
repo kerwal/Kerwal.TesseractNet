@@ -3,6 +3,7 @@
 
 #include <baseapi.h>
 #include <strngs.h>
+#include "..\leptonica\include\allheaders.h"
 
 using namespace System;
 using namespace System::Runtime::InteropServices;
@@ -24,6 +25,7 @@ namespace TesseractNet
 									  // in any of the above should be set to the
 									  // default OEM_TESSERACT_ONLY.
 	};
+
 	/**
 	* Base class for all tesseract APIs.
 	* Specific classes can add ability to work on different inputs or produce
@@ -154,26 +156,24 @@ namespace TesseractNet
 	 // /** Return the current page segmentation mode. */
 	 // tesseract::PageSegMode GetPageSegMode();
 
-	 // /**
-	 //  * Recognize a rectangle from an image and return the result as a string.
-	 //  * May be called many times for a single Init.
-	 //  * Currently has no error checking.
-	 //  * Greyscale of 8 and color of 24 or 32 bits per pixel may be given.
-	 //  * Palette color images will not work properly and must be converted to
-	 //  * 24 bit.
-	 //  * Binary images of 1 bit per pixel may also be given but they must be
-	 //  * byte packed with the MSB of the first byte being the first pixel, and a
-	 //  * 1 represents WHITE. For binary images set bytes_per_pixel=0.
-	 //  * The recognized text is returned as a char* which is coded
-	 //  * as UTF8 and must be freed with the delete [] operator.
-	 //  *
-	 //  * Note that TesseractRect is the simplified convenience interface.
-	 //  * For advanced uses, use SetImage, (optionally) SetRectangle, Recognize,
-	 //  * and one or more of the Get*Text functions below.
-	 //  */
-	 // char* TesseractRect(const unsigned char* imagedata,
-		//				  int bytes_per_pixel, int bytes_per_line,
-		//				  int left, int top, int width, int height);
+	  ///**
+	  // * Recognize a rectangle from an image and return the result as a string.
+	  // * May be called many times for a single Init.
+	  // * Currently has no error checking.
+	  // * Greyscale of 8 and color of 24 or 32 bits per pixel may be given.
+	  // * Palette color images will not work properly and must be converted to
+	  // * 24 bit.
+	  // * Binary images of 1 bit per pixel may also be given but they must be
+	  // * byte packed with the MSB of the first byte being the first pixel, and a
+	  // * 1 represents WHITE. For binary images set bytes_per_pixel=0.
+	  // * The recognized text is returned as a char* which is coded
+	  // * as UTF8 and must be freed with the delete [] operator.
+	  // *
+	  // * Note that TesseractRect is the simplified convenience interface.
+	  // * For advanced uses, use SetImage, (optionally) SetRectangle, Recognize,
+	  // * and one or more of the Get*Text functions below.
+	  // */
+	  //String^ TesseractRect(array<Byte>^ imagedata, int bytes_per_pixel, int bytes_per_line, int left, int top, int width, int height);
 
 	 // /**
 	 //  * Call between pages or documents etc to free up memory and forget
@@ -201,24 +201,28 @@ namespace TesseractNet
 	 // void SetImage(const unsigned char* imagedata, int width, int height,
 		//			int bytes_per_pixel, int bytes_per_line);
 
-	 // /**
-	 //  * Provide an image for Tesseract to recognize. As with SetImage above,
-	 //  * Tesseract doesn't take a copy or ownership or pixDestroy the image, so
-	 //  * it must persist until after Recognize.
-	 //  * Pix vs raw, which to use?
-	 //  * Use Pix where possible. A future version of Tesseract may choose to use Pix
-	 //  * as its internal representation and discard IMAGE altogether.
-	 //  * Because of that, an implementation that sources and targets Pix may end up
-	 //  * with less copies than an implementation that does not.
-	 //  */
-	 // void SetImage(const Pix* pix);
+	  /**
+	   * Provide an image for Tesseract to recognize. As with SetImage above,
+	   * Tesseract doesn't take a copy or ownership or pixDestroy the image, so
+	   * it must persist until after Recognize.
+	   * Pix vs raw, which to use?
+	   * Use Pix where possible. A future version of Tesseract may choose to use Pix
+	   * as its internal representation and discard IMAGE altogether.
+	   * Because of that, an implementation that sources and targets Pix may end up
+	   * with less copies than an implementation that does not.
+	   */
+	  // returns a pointer to the unmanaged Pix object - free it with FreePix() anytime after Recognize() or GetUTF8Text()
+	  IntPtr SetImage(String^ path);
+	  // TODO mimic the Pix struct from liblept (leptonica)
+	  //void SetImage(const Pix* pix);
 
-	 // /**
-	 //  * Restrict recognition to a sub-rectangle of the image. Call after SetImage.
-	 //  * Each SetRectangle clears the recogntion results so multiple rectangles
-	 //  * can be recognized with the same image.
-	 //  */
-	 // void SetRectangle(int left, int top, int width, int height);
+	  void FreePix(IntPtr pix);
+	  /**
+	   * Restrict recognition to a sub-rectangle of the image. Call after SetImage.
+	   * Each SetRectangle clears the recogntion results so multiple rectangles
+	   * can be recognized with the same image.
+	   */
+	  void SetRectangle(int left, int top, int width, int height);
 
 	 // /**
 	 //  * In extreme cases only, usually with a subclass of Thresholder, it
@@ -357,11 +361,11 @@ namespace TesseractNet
 	 // // DetectOS, or anything else that changes the internal PAGE_RES.
 	 // tesseract::ResultIterator* GetIterator();
 
-	 // /**
-	 //  * The recognized text is returned as a char* which is coded
-	 //  * as UTF8 and must be freed with the delete [] operator.
-	 //  */
-	 // char* GetUTF8Text();
+	  /**
+	   * The recognized text is returned as a char* which is coded
+	   * as UTF8 and must be freed with the delete [] operator.
+	   */
+	  String^ GetUTF8Text();
 	 // /**
 	 //  * Make a HTML-formatted string with hOCR markup from the internal
 	 //  * data structures.

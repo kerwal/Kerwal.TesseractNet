@@ -55,12 +55,12 @@
       </PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile>
       </PrecompiledHeaderOutputFile>
-      <AdditionalIncludeDirectories>..\tesseract-3.01\api;..\tesseract-3.01\ccmain;..\tesseract-3.01\ccutil;..\tesseract-3.01\ccstruct;..\tesseract-3.01\classify;..\tesseract-3.01\cutil;..\tesseract-3.01\dict;..\tesseract-3.01\display;..\tesseract-3.01\image;..\tesseract-3.01\textord;..\tesseract-3.01\viewer;..\tesseract-3.01\wordrec;..\tesseract-3.01\pageseg;..\tesseract-3.01\vs2010\include\leptonica;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\tesseract-3.01\api;..\tesseract-3.01\ccmain;..\tesseract-3.01\ccutil;..\tesseract-3.01\ccstruct;..\tesseract-3.01\classify;..\tesseract-3.01\cutil;..\tesseract-3.01\dict;..\tesseract-3.01\display;..\tesseract-3.01\image;..\tesseract-3.01\textord;..\tesseract-3.01\viewer;..\tesseract-3.01\wordrec;..\tesseract-3.01\pageseg;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>tesseract-debug.lib;ccutil.lib;user32.lib;liblept-static-mtdll-debug.lib;libpng-static-mtdll-debug.lib;libjpeg-static-mtdll-debug.lib;giflib-static-mtdll-debug.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\tesseract-3.01\vs2008\lib;..\tesseract-3.01\vs2010\Debug</AdditionalLibraryDirectories>
+      <AdditionalDependencies>tesseract-debug.lib;ccutil.lib;user32.lib;liblept-static-mtdll-debug.lib;libpng-static-mtdll-debug.lib;libjpeg-static-mtdll-debug.lib;giflib-static-mtdll-debug.lib;libtiff-static-mtdll-debug.lib;zlibd-static-mtdll-debug.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\tesseract-3.01\vs2010\Debug;..\leptonica\lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
