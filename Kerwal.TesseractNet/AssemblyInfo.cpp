@@ -10,7 +10,7 @@ using namespace System::Security::Permissions;
 // associated with an assembly.
 //
 [assembly:AssemblyTitleAttribute("Kerwal.TesseractNet")];
-[assembly:AssemblyDescriptionAttribute("")];
+[assembly:AssemblyDescriptionAttribute("A simple C++/CLI .Net wrapper to tesseract-ocr")];
 [assembly:AssemblyConfigurationAttribute("")];
 [assembly:AssemblyCompanyAttribute("Kerwal")];
 [assembly:AssemblyProductAttribute("Kerwal.TesseractNet")];
@@ -29,7 +29,7 @@ using namespace System::Security::Permissions;
 // You can specify all the value or you can default the Revision and Build Numbers
 // by using the '*' as shown below:
 
-[assembly:AssemblyVersionAttribute("1.0.0.0")];
+[assembly:AssemblyVersionAttribute("0.1.0.0")];
 
 [assembly:ComVisible(false)];
 

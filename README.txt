@@ -1,10 +1,23 @@
+Objective
+*********
+Write a simple C++/CLI .Net wrapper to tesseract-ocr so it can be used easily in C#, but keep the classes as similar to the
+original as possible. For now the scope of this project only focuses on the tesseract::TessBaseAPI class. I hope to expand
+the scope in the near future.
+
+Current State
+*************
+Only the most useful methods are implemented right now. Currently, it is only possible to retrieve the text from image files
+on disk - not in memory...yet. Only the Debug build configuration is available right now. For those not familiar with tesseract,
+it uses the Pix class from leptonica (liblept) for storing and processing image data. Leptonica can read and save image files in
+JPEG, TIFF, PNG, Z, and GIF formats.
+
 To Do
 *****
 1. Update build configurations to target appropriate LIB and DLL files for Debug or Release.
 	- Debug should target tesseract-debug.lib and post build should copy tesseract-debug.dll to Debug folder.
 	- Release should target tesseract.lib and post build should copy tesseract.dll to Release folder.
 2. Finish defining methods in TessBaseAPI (in progress).
-3. Fix crash bug when TessBaseAPI::!TessBaseAPI() attempts to delete the internal copy of tesseract::TessBaseAPI.
+3. Improve error catching for tesseract::TessBaseAPI:: method calls.
 
 How to Compile on Windows (Debug only)
 *************************
@@ -25,16 +38,24 @@ How to Use
 1. Reference (and copy) the Kerwal.TesseractNet.dll.
 2. Copy tesseract-debug.dll from Kerwal.TesseractNet\tesseract-3.01\vs2010\Debug.
 3. "using Kerwal.TesseractNet".
-4. Use TessBaseAPI like in C++ - with only a few differences. // TODO find and document the differences
-	- search the net for tesseract ocr and read what's available.
-	- browse the source code - start in the 'tesseract' project.
-	- Differences:
-	*                      Kerwal.TesseractNet                *               tesseract               *
-	* TessBaseAPI::PrintVariables(String^ path, String^ mode) * TessBaseAPI::PrintVariables(FILE *fp) *
-	* // opens a file at 'path' in 'mode', calls              *                                       *
-	* // PrintVariables and closes the file.                  *                                       *
-
+4. Use TessBaseAPI like in C++ - with only a few differences. See example below.
 5. Compile.
-6. Copy tessdata folder to output directory. //TODO elaborate more
+6. Copy tessdata folder to output directory. tessdata should be available from where you got tesseract-3.01.tar.gz
 
-To be continued...
+Example Usage
+*************
+// print the version of the Tesseract library
+Console.WriteLine(TessBaseAPI.Version());
+// initialize the base API
+TessBaseAPI tessBaseApi = new TessBaseAPI();
+tessBaseApi.Init("", null); // default to "eng"
+// set the image to process and retrieve a pointer to the Pix object
+IntPtr pix = tessBaseApi.SetImage("device-2012-01-09-210231.png");
+// set where to look for text
+tessBaseApi.SetRectangle(0, 615, 137, 31);
+// recognize and look for text - can return null
+string text = tessBaseApi.GetUTF8Text();
+// release the Pix object [IMPORTANT!]
+tessBaseApi.FreePix(pix);
+Console.WriteLine(text);
+Console.ReadKey();

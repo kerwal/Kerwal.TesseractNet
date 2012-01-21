@@ -36,9 +36,9 @@ namespace TesseractNet
 	*/
 	public ref class TessBaseAPI
 	{
-		public:
-	  TessBaseAPI();
-	  virtual ~TessBaseAPI();
+	public:
+		TessBaseAPI();
+		~TessBaseAPI();
 
 	  /**
 	   * Returns the version identifier as a static string. Do not delete.
@@ -577,10 +577,9 @@ namespace TesseractNet
 	 //// const PAGE_RES* GetPageRes() const {
 		////return page_res_;
 
-	  private:
-
-		  tesseract::TessBaseAPI *_tessBaseApi;
-	  };
+	private:
+		tesseract::TessBaseAPI *_tessBaseApi;
+	};
 } // namespace TesseractNet
 } // namespace Kerwal
 #endif	// __KERWAL_TESSERACTNET_TESSBASEAPI_H__

@@ -24,15 +24,12 @@ namespace TesseractNet
 
 	TessBaseAPI::~TessBaseAPI()
 	{
-		if(this->_tessBaseApi)
-		{
-			delete this->_tessBaseApi;
-			this->_tessBaseApi = NULL;
-		}
+		// dispose managed resources
 	}
 
 	TessBaseAPI::!TessBaseAPI()
 	{
+		// release unmanaged resources
 		if(this->_tessBaseApi)
 		{
 			delete this->_tessBaseApi;
@@ -210,7 +207,8 @@ namespace TesseractNet
 
 	void TessBaseAPI::FreePix(IntPtr pix)
 	{
-		lept_free(pix.ToPointer());
+		Pix* pPix = (Pix*)pix.ToPointer();
+		pixDestroy(&pPix);
 	}
 
 	void TessBaseAPI::SetRectangle(int left, int top, int width, int height)
@@ -221,6 +219,7 @@ namespace TesseractNet
 	String^ TessBaseAPI::GetUTF8Text()
 	{
 		char* text = this->_tessBaseApi->GetUTF8Text();
+		if(text == NULL) throw gcnew Exception("SetImage() must be called first.");
 		array<Byte>^ utf8TextBytes = gcnew array<Byte>(strlen(text));
 		Marshal::Copy((IntPtr)text, utf8TextBytes, 0, utf8TextBytes->Length);
 		delete[] text;
